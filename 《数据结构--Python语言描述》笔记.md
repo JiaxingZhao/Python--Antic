@@ -38,11 +38,7 @@
 
 ​	有序集合在其项之上施加了一个自然地顺序，类似电话簿中的条目和班级花名册的条目
 
-为了施加一种自然地顺序，必须要有某种规则来比较各项，例如：
-$$
-item_i <= item_{i+1}
-$$
-以便能够访问有序集合中的各个项。
+为了施加一种自然地顺序，必须要有某种规则来比较各项，例如：$$item_i <= item_{i+1}$$   以便能够访问有序集合中的各个项。
 
 有序集合并不需要是线性的或者是按照位置来排序的，集、包、字典都有可能是有序的，即便他们并不是按照位置来访问的，二叉搜索树也是在各项上施加了一种自然的顺序。
 
@@ -245,4 +241,164 @@ print (str(end - start))
 
 ##### 3.2.1 复杂度的阶
 
-​	
+​	前面的两个循环，第一个循环在问题数量为n时执行了n次，第二个循环在问题数量为n时执行了n*n次
+
+​	第一个算法的性能时线性的，第二个算法的行为是二次方阶的。如果一个算法对于任何的问题规模，都需要相同的操作次数，那么他拥有常数阶的性能，列表索引就是常数时间算法的一个例子，是性能最好的一类算法。
+
+​	对数阶比线性阶好一点，但比常数阶差一点，对数阶的工作量和问题规模的log2成比例。当问题规模翻倍的时候，其工作量只增加1。
+
+|    n    | 对数阶($$log_2n$$) | 线性阶($$n$$) |  平方阶($n^2$)   | 指数阶($$2^n$$) |
+| :-----: | :-------------: | :--------: | :-----------: | :----------: |
+|   100   |        7        |    100     |     10000     |      超标      |
+|  1000   |       10        |    1000    |    1000000    |      超标      |
+| 1000000 |       20        |  1000000   | 1000000000000 |     严重超标     |
+
+
+
+#### 3.3 搜索算法
+
+##### 3.3.1 搜索最小值
+
+```python
+'''
+这个算法必须访问列表中的每一项以确保找到了最小项的位置，因此，对于大小为n的列表，该算法必须进行n-1次比较，因此，算法的复杂度为O(n)
+'''
+
+def ourMin(lyst, trace = False):
+    """Returns the position of the minimum item."""
+    minpos = 0
+    current = 1
+    while current < len(lyst):
+        if lyst[current] < lyst[minpos]:
+            minpos = current
+            if trace: print current, minpos
+        current += 1
+    return minpos
+```
+
+
+
+##### 3.3.2 顺序搜索一个列表
+
+```python
+'''
+从第一个位置的项开始，将其与目标项进行比较，如果两个项相等，返回true，否则移动到下一个位置进行比较，如果到了最后一个位置，返回false，这种搜索叫作顺序搜索（sequential search）或线性搜索（linear search）
+'''
+def linearSearch(target, lyst, profiler):
+    """Returns the position of the target item if found,
+    or -1 otherwise."""
+    position = 0
+    while position < len(lyst):
+        profiler.comparison()
+        if target == lyst[position]:
+            return position
+        position += 1
+    return -1
+```
+
+
+
+##### 3.3.3 最好情况、最坏情况和平均情况的性能
+
+顺序搜索要考虑三种情况：
+
+​	1、最坏情况下，目标向位于末尾，或者就不在列表中。那么算法必须访问每一个项，并且对大小为n的列表执行n次迭代，因此，顺序搜索最坏情况的复杂度为O(n)
+
+​	2、最好情况下，第一次迭代就找到了对象，这种情况的复杂度为O(1)
+
+​	3、平均情况下，把每一个可能的位置找到目标向所需的迭代次数相加，并且用总和除以n，因此算法执行了（n+n-1+n-2+···+1)/n 或者 (n+1)/2次的迭代，对于很大的n，常数因子2的作用并不大，因此复杂度为O(n)
+
+
+
+##### 3.3.4 有序列表的二叉搜索
+
+​	当搜索没有特定顺序排列的数据，顺序搜索是必要的，当搜索排序的数据时，可以用二叉搜索
+
+​	假设列表中的项都是升序的，那么直接与中间位置对比，相等返回，小于搜前段，大于搜后段，二叉搜索的最坏情况的复杂度为 $$O(log_2n)$$
+
+```python
+def binarySearch(target, lyst, profiler):
+    """Returns the position of the target item if found,
+    or -1 otherwise."""
+    left = 0
+    right = len(lyst) - 1
+    while left <= right:
+        profiler.comparison()
+        midpoint = (left + right) // 2
+        if target == lyst[midpoint]:
+            return midpoint
+        elif target < lyst[midpoint]:
+            right = midpoint - 1
+        else:
+            left = midpoint + 1
+    return -1
+```
+
+
+
+##### 3.3.5 比较数据项
+
+​	二叉搜索和搜索最小项，都是假设列表中的项是可以互相比较的，使用 __ eq __ , __ lt __ , __ gt __方法来实现
+
+```python
+class SavingsAccount(object):
+    def __init__(self, name, pin, balance = 0.0):
+        self._name = name
+        self._pin = pin
+        self._balance = balance
+        
+        def __lt__(self, other):
+            return self._name < other._name
+```
+
+
+
+##### 3.3.6 练习3.3
+
+​	1、假设一个列表在索引0到9的位置上，包含了值20、44、48、55、62、66、74、88、93和99，用二叉搜索法搜索目标值90.记录搜索中左边右边和中间点的值，对于目标值44重复这个过程。
+
+Solution :
+
+```python
+def search(target, slist):
+    left = 0
+    right = len(slist) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if target == slist[mid]:
+            return mid
+        elif target < slist[mid]:
+            right = mid - 1
+        elif target > slist[mid]:
+            left = mid + 1
+    return -1
+```
+
+
+
+#### 3.4 基本排序算法
+
+##### 3.4.1选择排序
+
+​	最简单的策略就是搜索整个列表，对比两项是否满足条件，满足则交换位置
+
+```python
+def selectionSort(lyst):
+    i = 0
+    while i < len(lyst) - 1:
+        minIndex = I
+        j = i + 1
+        while j < len(lyst):
+            if lyst[i] < lyst[minIndex]:
+                minIndex = j
+                j += 1
+        if minIndex != 1:
+            swap(lyst, minIndex, I)
+        i += 1
+```
+
+​	该函数包含了一个嵌套循环，对于大小为n的列表，外围循环执行n-1次，第一次通过外围循环的时候，内部循环n-1次，第二次通过外围循环时，循环n-2次： 这种情况的复杂度为 $$O(n^2)$$
+
+​	$$(n-1)+(n-2)+···+1 = n(n-1) / 2 = \frac{1}{2}n^2-\frac{1}{2}n$$
+
+#### 	
