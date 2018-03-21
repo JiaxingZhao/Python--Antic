@@ -27,9 +27,10 @@ class HttpRequest(object):
 class StartSpider(object):
     """docstring for StartSpider"""
 
-    def __init__(self, spath="./", baseurl=''):
+    def __init__(self, spath="d:/", baseurl=''):
         self.spath = spath
         self.baseurl = baseurl
+        self.download_list = []
 
     def start(self, url):
         # 连接网页，返回内容
@@ -40,7 +41,9 @@ class StartSpider(object):
         page = HttpRequest.request_url(url)
         if page:
             context = BeautifulSoup(page, 'lxml')
-            self.parse_page(context)
+            if url not in self.download_list:
+                self.parse_page(context)
+                self.download_list.append(url)
             next_page = self.get_next_page(context)
             if next_page:
                 self.start(next_page)
@@ -53,18 +56,21 @@ class StartSpider(object):
         retitle = title.replace('[', '.').replace(']', '.')
         pic_list = context.find_all(alt=re.compile(retitle))
         for pic in pic_list:
-            picurl = pic['src']
-            picname = picurl.rsplit('/', 1)[1]
-            Thread(target=self.save_image, args=(
-                title, picurl, picname)).start()
+            try:
+                picurl = pic['src']
+                picname = picurl.rsplit('/', 1)[1]
+                Thread(target=self.save_image, args=(
+                    title, picurl, picname)).start()
+            except Exception as e:
+                print('有图片src错误')
             # self.save_image(title, picurl, picname)
 
     def save_image(self, title, url, name):
         # 得到要下载的连接和名字
         # 保存
         print('正在保存：%s图集的%s' % (title, name))
-        if not os.path.exists('./aitaotu/' + title):
-            os.mkdir('./aitaotu/' + title)
+        if not os.path.exists('d:/aitaotu/' + title):
+            os.mkdir('d:/aitaotu/' + title)
         file = os.path.join(self.spath, title, name)
         request.urlretrieve(url, file)
 
@@ -82,7 +88,7 @@ class StartSpider(object):
 
 if __name__ == '__main__':
     baseurl = 'https://www.aitaotu.com'
-    targeturl = 'https://www.aitaotu.com/guonei/35181.html'
-    filepath = './aitaotu/'
+    targeturl = 'https://www.aitaotu.com/guonei/34463.html'
+    filepath = 'd:/aitaotu/'
     startspider = StartSpider(filepath, baseurl)
     startspider.start(targeturl)
