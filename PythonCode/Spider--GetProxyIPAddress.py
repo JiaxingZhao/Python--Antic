@@ -26,11 +26,16 @@ class GetProxyIP(object):
         self.save_path = save_path
 
     def get_proxy(self, url, choice='random'):
+        request_page = self.req_page(url, choice)
+        checked_list = self.parse_page(request_page)
+        self.save_proxy(checked_list)
+
+    def req_page(self, url, choice):
         headers = GetFakeAgent.get_agent(choice)
         req_hd = request.Request(url, headers=headers)
         req = request.urlopen(req_hd)
         if req.code == 200:
-            self.parse_page(req)
+            return req
 
     def parse_page(self, obj):
         if obj:
@@ -38,24 +43,23 @@ class GetProxyIP(object):
             ip_text = con.body.text.split('\n\t\n\n\n')
             proxy_ip_list = ip_text[0].split("\n\t\t")
             if len(proxy_ip_list) > 0:
-                checked_list = []
                 pools = Pool(5)
+                checked_list = []
                 for ip in proxy_ip_list:
                     checked_list.append(
                         pools.apply_async(
                             self.check_proxy, (ip,)))
                 pools.close()
                 pools.join()
-                self.save_proxy(checked_list)
+                checked_list = [x.get() for x in checked_list if x.get()]
+                return checked_list
             else:
                 print('没有获取到ip信息，请检查...')
 
     def save_proxy(self, checked_list):
         with open(self.save_path + "proxylist.txt", 'w+') as f:
             for ip in checked_list:
-                ip = ip.get()
-                if ip:
-                    f.write(ip + '\r\n')
+                f.write(ip + '\r\n')
         with open(self.save_path + "proxylist.txt", 'r+') as f:
             count = len(f.readlines())
         if count == 0:
@@ -70,8 +74,9 @@ class GetProxyIP(object):
         opener = request.build_opener(proxy_hd)
         try:
             req = opener.open(check_site[site], timeout=1)
-            print(ip, '验证成功')
-            return ip
+            if ip.split(':')[0] in req.read().decode('gb2312'):
+                print(ip, '验证成功')
+                return ip
         except Exception as e:
             pass
 
