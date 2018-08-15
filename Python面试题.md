@@ -263,3 +263,227 @@ Instance method		# 传self
 协程都在用户态执行，由用户控制，不需要操作系统参与，避免了用户态和内核态的切换
 Python协程通过yield关键字实现
 ```
+
+
+#### 23. 用过哪些Python的库? 
+
+```
+自带库：datetime，re，threading， multiprocessing …
+第三方库：requests，MySQL-python，redis，Django，celery …
+单元测试的库
+```
+
+
+
+#### 24. 数据库事务的特性，什么场景下要使用事务？
+
+```
+原子性(Atomicity) - 事务中的所有操作要么全部执行，要么都不执行
+一致性(Consistency) - 事务执行之前和执行之后都必须处于一致性状态
+隔离性(Isolation) - 多个并发事务之间要相互隔离（后面专门会讲）
+持久性(Durability) - 事务一旦被提交了，那么对数据库中的数据的改变就是永久性的
+
+使用场景：1）原子性操作；
+		2）并发访问控制（和锁配合）
+```
+
+
+
+#### 25. MySQL事务和锁的关系 
+
+```
+二者不是一个维度的概念：事务是原子操作和访问隔离，锁是数据访问控制
+二者经常一起出现：锁（select for update）要在事务中才能生效
+事务中不一定要有锁
+```
+
+
+
+#### 26. MySQL InnoDB引擎的事务隔离级别
+
+```
+Innodb四个事务隔离级别，MySQL默认使用RR级别
+脏读 – 读到了数据库中未提交的数据
+不可重复读 – 一个事务内多次查询结果不一致
+幻读 – 读到了之前不存在的新纪录（insert）
+```
+
+![1534302969970](C:\Users\Jiaxing\AppData\Local\Temp\1534302969970.png)
+
+
+
+#### 27. Innodb索引、联合索引，卡丁值(Cardinality) 
+
+```
+索引的意义在于提高查询效率，会大幅影响写入速度
+Innodb索引存储结构：B+树。由计算机的内存-机械硬盘两层存储结构决定
+可以使用索引的情况：
+	where 条件中
+	order by
+	group by
+卡丁值太低不要加索引，区分度太低。比如性别、状态
+联合索引符合最左前缀原则
+```
+
+![1534303067466](C:\Users\Jiaxing\AppData\Local\Temp\1534303067466.png)
+
+
+
+#### 28. Redis支持事务吗？ 
+
+```
+支持，但是和数据库的事务概念不完全一致
+坑！非原子性,不支持回滚：Redis在事务失败时不进行回滚，而是继续执行余下的命令
+不回滚的原因：1.只有语法错误会失败，开发阶段就应该发现 2.不回顾保持Redis简单
+MULTI 、 EXEC 、 DISCARD 和 WATCH 是 Redis 事务的基础
+也可以用Pipeline实现批量提交命令（非事务）
+```
+
+
+
+#### 29. Redis高可用方案？
+
+```
+master-slave
+sentinel自动flavor
+集群：Redis Cluster（官方）、Codis （豌豆荚）
+```
+
+
+
+#### 30. 数组、链表、Hash表/字典区别，并举例说明各自的应用场景
+
+```
+数组 – 连续空间; 随机访问O(1); 插入、删除元素O(n)。储存一个月每天的温度
+链表 - 非连续空间；随机访问O(n)；插入、删除元素O(1)。储存行程计划
+Hash表/字典 - 非连续空间；随机访问O(n)；插入、删除O(1)；不重复。储存班级每人成绩
+```
+
+
+
+#### 31. 栈、队列的区别，举例各自的应用场景 
+
+```
+栈 – 先进先出；支持push、pop、top操作。函数的调用关系
+队列 – 先进先出。按顺序执行的消息队列
+双端队列 – 两端都可以进出。既可当栈使用，也可当队列使用
+```
+
+
+
+#### 32. 常见排序算法实现，稳定性，及其时间复杂度、空间复杂度 
+
+![1534314173618](C:\Users\Jiaxing\AppData\Local\Temp\1534314173618.png)
+
+
+
+#### 33.  谈谈你对几种不同Python web框架的认识和理解
+
+```
+Django、Tornado、Flask、Bottle
+```
+
+
+
+#### 34. Django中间件相关 
+
+```
+什么是Django中间件？
+什么场景下使用Django中间件？
+实现一个中间件主要实现的两个方法：process_request和process_response
+Django中间件请求阶段和响应阶段的执行顺序？
+实现一个中间件主要实现的两个方法：process_request和process_response
+```
+
+![1534314262045](C:\Users\Jiaxing\AppData\Local\Temp\1534314262045.png)
+
+
+
+#### 35. Django的session模块
+
+```
+Django session通过客户端cookie存放sessionid + 服务端序列化存储实现
+使用： django.contrib.sessions app + SessionMiddleware middleware
+Django session支持多种存储引擎：db，cache，cached_db，file，cookie
+Django session 有domain限制。.example.com  sub.example.com
+可以在request.session直接读取
+```
+
+
+
+#### 36. Django的Auth模块
+
+```
+User、Permissions、Groups、password、login
+使用：django.contrib.auth app+ AuthenticationMiddleware middleware
+依赖session模块
+最佳实践：基于AbstractUser实现自己的User类
+如何安全的存储密码？
+```
+
+
+
+#### 37. 谈一下Django中的安全机制 
+
+```
+xss(跨域脚本攻击) – 模板转义
+CSRF（跨站提交请求） - CsrfViewMiddleware
+防sql注入 – ORM，raw()方法传入参数，不要直接拼接字符串
+https cookie – 做不到全站https时很有必要
+常量密码验证时间
+```
+
+
+
+#### 38. Django的缓存机制
+
+```
+为什么要使用cache？
+cache抽象成基本操作：get、set、delete、expire
+backend：支持memcached、db、file、local-memory
+使用：1）通过settings.py中的CACHE配置；
+	 2）from django.core.cache import cache
+```
+
+
+
+#### 39. Django如何实现RESTful接口 
+
+```
+class-based view
+理解RESTful架构 - 阮一峰的网络日志
+http://www.ruanyifeng.com/blog/2011/09/restful.html
+RESTful API 设计指南 - 阮一峰的网络日志
+http://www.ruanyifeng.com/blog/2014/05/restful_api.html
+```
+
+![1534314401023](C:\Users\Jiaxing\AppData\Local\Temp\1534314401023.png)
+
+![1534314404356](C:\Users\Jiaxing\AppData\Local\Temp\1534314404356.png)
+
+
+
+#### 40.  简述HTTP协议的特点，列举几个常见的HTTP HEAD 
+
+```
+HTTP（超文本传输协议）是一个基于请求与响应模式的、无状态的、应用层协议，基于TCP连接
+Context-type
+Cookie
+Accept-Language
+Referer
+Cache-Control
+If-Modified-Since、Last-Modified
+```
+
+
+
+#### 41.HTTP请求报文的三部分，HTTP响应报文的三部分 
+
+```
+请求报文三部分：请求行、消息报头、请求正文
+响应报文三部分：状态行、消息报头、响应正文
+```
+
+
+
+#### 42. 
