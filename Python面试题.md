@@ -308,7 +308,7 @@ Innodb四个事务隔离级别，MySQL默认使用RR级别
 幻读 – 读到了之前不存在的新纪录（insert）
 ```
 
-![1534302969970](C:\Users\Jiaxing\AppData\Local\Temp\1534302969970.png)
+![](https://github.com/JiaxingZhao/Python--Antic/blob/master/img/1534302969970.png)
 
 
 
@@ -325,7 +325,7 @@ Innodb索引存储结构：B+树。由计算机的内存-机械硬盘两层存�
 联合索引符合最左前缀原则
 ```
 
-![1534303067466](C:\Users\Jiaxing\AppData\Local\Temp\1534303067466.png)
+![](https://github.com/JiaxingZhao/Python--Antic/blob/master/img/1534303067466.png)
 
 
 
@@ -373,7 +373,7 @@ Hash表/字典 - 非连续空间；随机访问O(n)；插入、删除O(1)；不�
 
 #### 32. 常见排序算法实现，稳定性，及其时间复杂度、空间复杂度 
 
-![1534314173618](C:\Users\Jiaxing\AppData\Local\Temp\1534314173618.png)
+![](https://github.com/JiaxingZhao/Python--Antic/blob/master/img/1534314173618.png)
 
 
 
@@ -395,7 +395,7 @@ Django中间件请求阶段和响应阶段的执行顺序？
 实现一个中间件主要实现的两个方法：process_request和process_response
 ```
 
-![1534314262045](C:\Users\Jiaxing\AppData\Local\Temp\1534314262045.png)
+![](https://github.com/JiaxingZhao/Python--Antic/blob/master/img/1534314262045.png)
 
 
 
@@ -457,9 +457,9 @@ RESTful API 设计指南 - 阮一峰的网络日志
 http://www.ruanyifeng.com/blog/2014/05/restful_api.html
 ```
 
-![1534314401023](C:\Users\Jiaxing\AppData\Local\Temp\1534314401023.png)
+![](https://github.com/JiaxingZhao/Python--Antic/blob/master/img/1534314401023.png)
 
-![1534314404356](C:\Users\Jiaxing\AppData\Local\Temp\1534314404356.png)
+![](https://github.com/JiaxingZhao/Python--Antic/blob/master/img/1534314404356.png)
 
 
 
