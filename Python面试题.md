@@ -45,7 +45,7 @@ CPU密集型 – 进程
 ```python
 threading模块
 最基础的是start、join两个方法
-锁：threading.Lock和threading.RLock
+
 
 import threading, time
 
