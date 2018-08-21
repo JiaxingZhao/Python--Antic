@@ -1,4 +1,4 @@
-#### 1. 简单谈一下你对Python这门语言的理解
+1. 简单谈一下你对Python这门语言的理解
 
 ```
 设计哲学：强调代码的可读性和简洁的语法
@@ -62,24 +62,6 @@ print("end join")
 ```
 
 
-
-#### 6. Python多进程编程
-
-```
-multiprocessing模块
-基础方法跟threading类似
-锁也跟threading类似
-神器multiprocessing.dummy
-```
-
-
-
-#### 7. Pyhton多进程编程如何共享数据
-
-```
-multiprocessing.Value 和 multiprocessing.Array
-Queue
-```
 
 
 
@@ -210,10 +192,11 @@ Django中使用django.test模块，是对unittest的封装，常用于对数据�
 
 ```python
 mock \ httpretty \ fakeredis \ mixer \ coverage
-# mock 生成虚假返回数据，例如调用send_sms方法，使用mock，则系统认为假设返回为真
-# fakeredis  构造假redis
-# mixer  构造随机假数据
-# coverage  代码覆盖率
+# mock        生成虚假返回数据，例如调用send_sms方法，使用mock，则系统认为假设返回为真
+# httpretty   生成假的返回值，直接截获系统的HTTP请求，并返回预设值
+# fakeredis   构造假redis
+# mixer       构造随机假数据
+# coverage    代码覆盖率
 ```
 
 
@@ -228,17 +211,18 @@ mock \ httpretty \ fakeredis \ mixer \ coverage
 # 实现一个能够方便打印函数的运行时间的装饰器，装饰器要有参数控制输出时间单位是s还是ms
 def timer(time_type='s'):
     def outer(func):
+        from functools import wraps
+        @wraps(func)
         def decor(*args):
+            import time
             start_time = time.time()
             func(*args)
             end_time = time.time()
+            d_time = end_time - start_time
             if time_type == 's':
-                d_time = int(end_time - start_time)
-                print("run the func use : %s sec" % d_time)
+                print("run the func use : %s sec" % round(d_time, 2))
             if time_type == 'ms':
-                d_time = end_time - start_time
-                d_time = int(d_time * 1000)
-                print("run the func use : %s ms" % d_time)
+                print("run the func use : %s ms" % int(d_time*1000))
         return decor
     return outer
 ```
@@ -248,8 +232,8 @@ def timer(time_type='s'):
 #### 21. Staticmethod、 Classmethod、 Instance method三者的区别和联系？
 
 ```python
-Static method		# 不传值， 就是与类一起使用的， 明确代码使用位置
-Class method		# 传cls
+Staticmethod		# 不传值， 就是与类一起使用的， 明确代码使用位置
+Classmethod  		# 传cls
 Instance method		# 传self
 ```
 
@@ -265,12 +249,15 @@ Python协程通过yield关键字实现
 ```
 
 
-#### 23. 用过哪些Python的库? 
+
+#### 23. 发散性问题，考察软技能
 
 ```
-自带库：datetime，re，threading， multiprocessing …
-第三方库：requests，MySQL-python，redis，Django，celery …
-单元测试的库
+1. 知道PEP8吗？ 简单说几条PEP8的规范
+2. 用过哪些Python库？
+	自带库：datetime，re，threading， multiprocessing …
+	第三方库：requests，MySQL-python，redis，Django，celery …
+	单元测试的库
 ```
 
 
@@ -293,7 +280,7 @@ Python协程通过yield关键字实现
 
 ```
 二者不是一个维度的概念：事务是原子操作和访问隔离，锁是数据访问控制
-二者经常一起出现：锁（select for update）要在事务中才能生效
+二者经常一起出现：锁（select_for_update）要在事务中才能生效
 事务中不一定要有锁
 ```
 
@@ -334,7 +321,8 @@ Innodb索引存储结构：B+树。由计算机的内存-机械硬盘两层存�
 ```
 支持，但是和数据库的事务概念不完全一致
 坑！非原子性,不支持回滚：Redis在事务失败时不进行回滚，而是继续执行余下的命令
-不回滚的原因：1.只有语法错误会失败，开发阶段就应该发现 2.不回顾保持Redis简单
+不回滚的原因：1.只有语法错误会失败，开发阶段就应该发现
+             2.不回滚保持Redis简单
 MULTI 、 EXEC 、 DISCARD 和 WATCH 是 Redis 事务的基础
 也可以用Pipeline实现批量提交命令（非事务）
 ```
@@ -392,7 +380,6 @@ Django、Tornado、Flask、Bottle
 什么场景下使用Django中间件？
 实现一个中间件主要实现的两个方法：process_request和process_response
 Django中间件请求阶段和响应阶段的执行顺序？
-实现一个中间件主要实现的两个方法：process_request和process_response
 ```
 
 ![](https://github.com/JiaxingZhao/Python--Antic/blob/master/img/1534314262045.png)
@@ -403,7 +390,7 @@ Django中间件请求阶段和响应阶段的执行顺序？
 
 ```
 Django session通过客户端cookie存放sessionid + 服务端序列化存储实现
-使用： django.contrib.sessions app + SessionMiddleware middleware
+使用： django.contrib.sessions  INSTALLED_APPS   + SessionMiddleware   MIDDLEWARE
 Django session支持多种存储引擎：db，cache，cached_db，file，cookie
 Django session 有domain限制。.example.com  sub.example.com
 可以在request.session直接读取
@@ -415,10 +402,10 @@ Django session 有domain限制。.example.com  sub.example.com
 
 ```
 User、Permissions、Groups、password、login
-使用：django.contrib.auth app+ AuthenticationMiddleware middleware
+使用：django.contrib.auth   INSTALLED_APPS  + AuthenticationMiddleware   MIDDLEWARE
 依赖session模块
 最佳实践：基于AbstractUser实现自己的User类
-如何安全的存储密码？
+如何安全的存储密码？           Hash + Salt
 ```
 
 
@@ -426,10 +413,8 @@ User、Permissions、Groups、password、login
 #### 37. 谈一下Django中的安全机制 
 
 ```
-xss(跨域脚本攻击) – 模板转义
-CSRF（跨站提交请求） - CsrfViewMiddleware
-防sql注入 – ORM，raw()方法传入参数，不要直接拼接字符串
-https cookie – 做不到全站https时很有必要
+XSS (跨域脚本攻击)   - 模板转义 （ 直接写script脚本 ）
+CSRF（跨站提交请求） -  CsrfViewMiddleware
 常量密码验证时间
 ```
 
@@ -473,6 +458,8 @@ Accept-Language
 Referer
 Cache-Control
 If-Modified-Since、Last-Modified
+
+五层： 应用层、网络层、传输层、数据链路层、物理层
 ```
 
 
@@ -483,6 +470,10 @@ If-Modified-Since、Last-Modified
 请求报文三部分：请求行、消息报头、请求正文
 响应报文三部分：状态行、消息报头、响应正文
 ```
+
+![](http://dl.iteye.com/upload/attachment/0069/3451/412b4451-2738-3ebc-b1f6-a0cc13b9697b.jpg)
+
+![](http://dl.iteye.com/upload/attachment/0069/3492/bddb00b6-a3e1-3112-a4f4-4b3cb8687c70.jpg)
 
 
 
