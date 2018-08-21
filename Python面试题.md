@@ -471,9 +471,9 @@ If-Modified-Since、Last-Modified
 响应报文三部分：状态行、消息报头、响应正文
 ```
 
-![](http://dl.iteye.com/upload/attachment/0069/3451/412b4451-2738-3ebc-b1f6-a0cc13b9697b.jpg)
+![](https://github.com/JiaxingZhao/Python--Antic/blob/master/img/412b4451-2738-3ebc-b1f6-a0cc13b9697b.jpg)
 
-![](http://dl.iteye.com/upload/attachment/0069/3492/bddb00b6-a3e1-3112-a4f4-4b3cb8687c70.jpg)
+![](https://github.com/JiaxingZhao/Python--Antic/blob/master/img/bddb00b6-a3e1-3112-a4f4-4b3cb8687c70.jpg)
 
 
 
